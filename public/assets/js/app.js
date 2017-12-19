@@ -119,18 +119,18 @@ $(document).on("click",".note-delete",function(){
 
     var thisId = $(this).attr("data-id");
 
-    // $.ajax({
-    //     method: "POST",
-    //     url: "/delete/" + thisId,
-    // })
-    // // With that done
-    //     .done(function(data) {
-    //         // Log the response
-    //         console.log(data);
-    //         location.reload();
-    //     });
+    $.ajax({
+        method: "POST",
+        url: "/note/delete/" + thisId,
+    })
+    // With that done
+        .done(function(data) {
+            // Log the response
+            console.log(data);
+            location.reload();
+        });
 
-})
+});
 
 // When you click the savenote button
 $(document).on("click", "#savenote", function() {

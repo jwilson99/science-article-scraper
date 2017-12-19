@@ -149,5 +149,18 @@ router.post("/delete/:id", function (req, res) {
         });
 });
 
+// deletes notes and instances in associated articles
+router.post("/note/delete/:id", function(req, res){
+    db.Note
+        .remove({"_id":req.params.id})
+        .then(function(dbNote){
+            res.json(dbNote);
+            return db.Article.findOneAndUpdate({_id: req.params.id}, { $pull: {note: {$in: [req.params.id]}}}, {new: true});
+        })
+        .catch(function(err){
+            res.json(err);
+        });
+});
+
 // exports routes for server.js to use
 module.exports = router;
