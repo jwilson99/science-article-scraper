@@ -4,7 +4,8 @@
   "description": "Views and comment on articles scraped from http://www.sciencemag.org/news..",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
