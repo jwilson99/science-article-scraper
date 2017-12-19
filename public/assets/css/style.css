@@ -21,6 +21,22 @@ nav {
     background-repeat: no-repeat;
     background-size: cover;
     background-color: mediumseagreen;
+    text-align: center;
+    border: solid greenyellow 5px;
+}
+
+.card {
+    opacity: 0.75;
+}
+
+
+.card-block {
+    padding: 20px;
+    text-align: center;
+}
+
+.scrape-button {
+    color: white !important;
 }
 
 #wrapper {
@@ -30,16 +46,22 @@ nav {
     margin-bottom: 50px;
     padding-top: 5%;
 }
+
+/*styles container holding articles on either page*/
 #articles {
     display: inline-block;
     overflow: auto;
     width: 60%;
     height: 700px;
 }
+
+/*styles container holder notes on /articles page*/
 #notes {
     float: right;
     width: 30%;
 }
+
+/*styles input in note section on /articles page*/
 textarea, input {
     display: block;
     width: 100%;
