@@ -44,7 +44,11 @@ router.get("/scrape", function (req, res) {
                     .children("a")
                     .attr("href");
 
-                results.push(result);
+                // checks for and excludes blank entries
+                if (result.title !== "" && result.link !== "") {
+                    results.push(result);
+                }
+
             })
         }
         else {
