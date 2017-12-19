@@ -1,25 +1,21 @@
-// Grab the articles as a json
-$.getJSON("/articles", function(data) {
-    // For each one
-    for (var i = 0; i < data.length; i++) {
-        // Display the apropos information on the page
-        $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-    }
-});
-
+// when scrape button is clicked...
 $(document).on("click",".scrape-button", function(){
 
+    // ajax call to scrape data from science magazine
    $.ajax({
        method: "GET",
        url: "/scrape"
    }).done(function(data){
        console.log(data);
+       // reloads to show new data
        location.reload();
    })
 });
 
+// when article save button is clicked...
 $(document).on("click",".save-button", function() {
 
+    // button is updated to reflect save; cannot be pressed again
     $(this).removeClass("btn-primary");
     $(this).removeClass("save-button");
     $(this).addClass("btn-success");
@@ -31,6 +27,7 @@ $(document).on("click",".save-button", function() {
     var thisTitle = $(this).attr("data-title");
     var thisLink = $(this).attr("data-link");
 
+    // ajax call to create article
     $.ajax({
         method: "POST",
         url: "/scrape/" + thisTitle,
@@ -40,27 +37,26 @@ $(document).on("click",".save-button", function() {
             link: thisLink
         }
     })
-    // With that done
         .done(function(data) {
             // Log the response
             console.log(data);
-            // Empty the notes section
             console.log("Article saved!");
 
         });
 });
 
+// when article delete button is pressed...
 $(document).on("click",".delete-button", function() {
     console.log("DELETE BUTTON CLICKED");
     console.log($(this).attr("data-id"));
 
     var thisId = $(this).attr("data-id");
 
+    // ajax call to remove article
     $.ajax({
         method: "POST",
         url: "/delete/" + thisId,
     })
-    // With that done
         .done(function(data) {
             // Log the response
             console.log(data);
@@ -69,19 +65,18 @@ $(document).on("click",".delete-button", function() {
 });
 
 
-// Whenever someone clicks a p tag
+// whenever someone clicks a p tag
 $(document).on("click", "p", function() {
-    // Empty the notes from the note section
+    // empties the notes from the note section
     $("#notes").empty();
-    // Save the id from the p tag
+    // saves the id from the p tag
     var thisId = $(this).attr("data-id");
 
-    // Now make an ajax call for the Article
+    // ajax call to get articles and associated notes
     $.ajax({
         method: "GET",
         url: "/articles/" + thisId
     })
-    // With that done, add the note information to the page
         .done(function(data) {
             console.log(data);
             // The title of the article
@@ -113,12 +108,14 @@ $(document).on("click", "p", function() {
         });
 });
 
+// when note delete button is clicked...
 $(document).on("click",".note-delete",function(){
     console.log("DELETE BUTTON CLICKED");
     console.log($(this).attr("data-id"));
 
     var thisId = $(this).attr("data-id");
 
+    // ajax cal lto remove note and association
     $.ajax({
         method: "POST",
         url: "/note/delete/" + thisId,

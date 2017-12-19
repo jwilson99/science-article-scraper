@@ -16,26 +16,27 @@ router.get("/", function (req, res) {
     res.render("scrape", scrapeObject);
 });
 
-// A GET route for scraping the echojs website
+// a GET route for scraping the science magazine website
 // stores scraped articles
 var results = [];
 router.get("/scrape", function (req, res) {
 
     // url of site being scraped
-    var url = "http://www.echojs.com/";
+    var url = "http://www.sciencemag.org/";
 
     request(url, function (error, response, html) {
         if (!error && response.statusCode == 200) {
             var $ = cheerio.load(html);
-            // Now, we grab every h2 within an article tag, and do the following:
 
+            // resets results to empty for new scrape
             results = [];
 
-            $("article h2").each(function (i, element) {
-                // Save an empty result object
+            // grabs every h2 within an article tag
+            $("div h2.media__headline").each(function (i, element) {
+                // saves an empty result object
                 var result = {};
 
-                // Add the text and href of every link, and save them as properties of the result object
+                // adds the text and href of every link, and save them as properties of the result object
                 result.title = $(this)
                     .children("a")
                     .text();
@@ -64,9 +65,9 @@ router.get("/scrape", function (req, res) {
 });
 
 
-// Route for getting all Articles from the db
+// route for getting all Articles from the db
 router.get("/articles", function (req, res) {
-    // Grab every document in the Articles collection
+    // grabs every document in the Articles collection
     db.Article
         .find({})
         .then(function (dbArticle) {
@@ -83,12 +84,11 @@ router.get("/articles", function (req, res) {
         });
 });
 
-// Route for grabbing a specific Article by id, populate it with it's note
+// route for grabbing a specific Article by id, populates it with it's notes
 router.get("/articles/:id", function (req, res) {
-    // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+
     db.Article
         .findOne({_id: req.params.id})
-        // ..and populate all of the notes associated with it
         .populate("note")
         .then(function (dbArticle) {
             // if Article is successfully updated, it is sent back to the client
@@ -101,15 +101,13 @@ router.get("/articles/:id", function (req, res) {
         });
 });
 
-// Route for saving/updating an Article's associated Note
+// route for saving/updating an Article's associated Note
 router.post("/articles/:id", function (req, res) {
-    // Create a new note and pass the req.body to the entry
+    // creates a new note and pass the req.body to the entry
     db.Note
         .create(req.body)
         .then(function (dbNote) {
-            // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
-            // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
-            // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
+            // updates articles with new notes
             return db.Article.findOneAndUpdate({_id: req.params.id}, {$addToSet: {note: dbNote._id}}, {new: true});
         })
         .then(function (dbArticle) {
