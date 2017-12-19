@@ -1,10 +1,25 @@
-body { background-color: palegreen; }
+body {
+    background-image: url("../img/eco_bg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: palegreen;
+}
+
+nav {
+    background-image: url("../img/eco_sm.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: mediumseagreen;
+}
 
 .articleDiv {
     margin-bottom: 20px;
 }
 
 .jumbotron {
+    background-image: url("../img/eco_sm.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
     background-color: mediumseagreen;
 }
 
@@ -28,6 +43,9 @@ body { background-color: palegreen; }
 textarea, input {
     display: block;
     width: 100%;
+    background-image: url("../img/eco_sm.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
     background-color: mediumseagreen;
 }
 input {

@@ -8,16 +8,28 @@ var request = require("request-promise-native");
 var cheerio = require("cheerio");
 
 // routes
+router.get("/", function (req, res) {
+    var scrapeObject = {
+        scrapedArticles: results
+    };
+    console.log(scrapeObject);
+    res.render("scrape", scrapeObject);
+});
+
 // A GET route for scraping the echojs website
+// stores scraped articles
 var results = [];
 router.get("/scrape", function (req, res) {
 
+    // url of site being scraped
     var url = "http://www.echojs.com/";
 
     request(url, function (error, response, html) {
         if (!error && response.statusCode == 200) {
             var $ = cheerio.load(html);
             // Now, we grab every h2 within an article tag, and do the following:
+
+            results = [];
 
             $("article h2").each(function (i, element) {
                 // Save an empty result object
@@ -31,50 +43,26 @@ router.get("/scrape", function (req, res) {
                     .children("a")
                     .attr("href");
 
-                // Create a new Article using the `result` object built from scraping
-                // db.Article
-                //     .create(result)
-                //     .then(function (dbArticle) {
-                //         // If we were able to successfully scrape and save an Article, send a message to the client
-                //         console.log("Scrape complete");
-                //     })
-                //     .catch(function (err) {
-                //         // If an error occurred, send it to the client
-                //         console.log(err);
-                //     });
-
                 results.push(result);
             })
         }
         else {
             console.log("Unable to request data from " + url);
         }
-    }).then(function(){
-        var scrapeObject = {
-            scrapedArticles: results
-        };
-        console.log(scrapeObject);
-        res.render("scrape", scrapeObject);
-    });
+    })
+        .then(function () {
+            var scrapeObject = {
+                scrapedArticles: results
+            };
+            console.log(scrapeObject);
+            res.render("scrape", scrapeObject);
+        })
+        .catch(function (err) {
+            // if an error occurred, it is sent to the client
+            res.json(err);
+        });
 });
 
-// router.get("/", function (req, res) {
-//     db.Article
-//         .find({})
-//         .then(function (dbArticle) {
-//             // If we were able to successfully find Articles, send them back to the client
-//             var hbsObject = {
-//                 articles: dbArticle
-//             };
-//             console.log(hbsObject);
-//             res.render("index", hbsObject);
-//         })
-//         .catch(function (err) {
-//             // If an error occurred, send it to the client
-//             res.json(err);
-//         });
-//
-// });
 
 // Route for getting all Articles from the db
 router.get("/articles", function (req, res) {
@@ -82,7 +70,7 @@ router.get("/articles", function (req, res) {
     db.Article
         .find({})
         .then(function (dbArticle) {
-            // If we were able to successfully find Articles, send them back to the client
+            // if Article is successfully updated, it is sent back to the client
             var hbsObject = {
                 articles: dbArticle
             };
@@ -90,7 +78,7 @@ router.get("/articles", function (req, res) {
             res.render("index", hbsObject);
         })
         .catch(function (err) {
-            // If an error occurred, send it to the client
+            // if an error occurred, it is sent to the client
             res.json(err);
         });
 });
@@ -103,12 +91,12 @@ router.get("/articles/:id", function (req, res) {
         // ..and populate all of the notes associated with it
         .populate("note")
         .then(function (dbArticle) {
-            // If we were able to successfully find an Article with the given id, send it back to the client
+            // if Article is successfully updated, it is sent back to the client
             res.json(dbArticle);
             console.log(dbArticle.note);
         })
         .catch(function (err) {
-            // If an error occurred, send it to the client
+            // if an error occurred, it is sent to the client
             res.json(err);
         });
 });
@@ -125,34 +113,41 @@ router.post("/articles/:id", function (req, res) {
             return db.Article.findOneAndUpdate({_id: req.params.id}, {$addToSet: {note: dbNote._id}}, {new: true});
         })
         .then(function (dbArticle) {
-            // If we were able to successfully update an Article, send it back to the client
+            // if Article is successfully updated, it is sent back to the client
             res.json(dbArticle);
         })
         .catch(function (err) {
-            // If an error occurred, send it to the client
+            // if an error occurred, it is sent to the client
             res.json(err);
         });
 });
 
-// Route for saving/updating an Article's associated Note
+// route for saving/updating an Articles associated Note
 router.post("/scrape/:title", function (req, res) {
-    // Create a new note and pass the req.body to the entry
+    // creates a new note and pass the req.body to the entry
     db.Article
         .create(req.body)
         .then(function (dbArticle) {
-            // If we were able to successfully update an Article, send it back to the client
+            // if Article is successfully updated, it is sent back to the client
             res.json(dbArticle);
         })
         .catch(function (err) {
-            // If an error occurred, send it to the client
+            // if an error occurred, it is sent to the client
             res.json(err);
         });
 });
 
-router.post("/scrape/:id", function(req, res) {
-   db.Article
-       .
+// deletes saved articles by id
+router.post("/delete/:id", function (req, res) {
+    db.Article
+        .remove({"_id": req.params.id})
+        .then(function (dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
 });
 
-// Export routes for server.js to use.
+// exports routes for server.js to use
 module.exports = router;

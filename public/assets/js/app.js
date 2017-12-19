@@ -7,6 +7,17 @@ $.getJSON("/articles", function(data) {
     }
 });
 
+$(document).on("click",".scrape-button", function(){
+
+   $.ajax({
+       method: "GET",
+       url: "/scrape"
+   }).done(function(data){
+       console.log(data);
+       location.reload();
+   })
+});
+
 $(document).on("click",".save-button", function() {
 
     $(this).removeClass("btn-primary");
@@ -47,13 +58,13 @@ $(document).on("click",".delete-button", function() {
 
     $.ajax({
         method: "POST",
-        url: "/scrape/" + thisId,
+        url: "/delete/" + thisId,
     })
     // With that done
         .done(function(data) {
             // Log the response
             console.log(data);
-
+            location.reload();
         });
 });
 
@@ -84,6 +95,16 @@ $(document).on("click", "p", function() {
 
             // If there's a note in the article
             if (data.note) {
+                for (var i = 0; i < data.note.length; i++){
+
+                    var noteDiv = $("<div class='card articleDiv'>");
+                    var cardHead = $("<div class='card-header'><div class='card-title'>"+data.note[i].title+"</div>");
+                    var cardBody = $("<div class='card-block'><p class='card-text'>"+data.note[i].body+"</p></div><button class='note-delete btn btn-danger' data-id='"+data.note[i]._id+"'>DELETE!</button>");
+
+                    $(noteDiv).append(cardHead, cardBody);
+
+                    $("#notes").prepend(noteDiv);
+                }
                 // Place the title of the note in the title input
                 $("#titleinput").val(data.note.title);
                 // Place the body of the note in the body textarea
@@ -91,6 +112,25 @@ $(document).on("click", "p", function() {
             }
         });
 });
+
+$(document).on("click",".note-delete",function(){
+    console.log("DELETE BUTTON CLICKED");
+    console.log($(this).attr("data-id"));
+
+    var thisId = $(this).attr("data-id");
+
+    // $.ajax({
+    //     method: "POST",
+    //     url: "/delete/" + thisId,
+    // })
+    // // With that done
+    //     .done(function(data) {
+    //         // Log the response
+    //         console.log(data);
+    //         location.reload();
+    //     });
+
+})
 
 // When you click the savenote button
 $(document).on("click", "#savenote", function() {
